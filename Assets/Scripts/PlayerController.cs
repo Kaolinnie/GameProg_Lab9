@@ -8,20 +8,30 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpPower = 5.0f;
     public GameObject groundcheckObject;
     private Rigidbody2D _playerRigidbody;
+    private Animator _animator;
+
+
     private void Start()
     {
         _playerRigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
     }
     private void Update()
     {
         MovePlayer();
 
+        _animator.SetBool("IsRunning",(_playerRigidbody.velocity.magnitude > 0.0 && IsGrounded()));
+        _animator.SetBool("IsGrounded",IsGrounded());
+
         if (Input.GetButton("Jump") && IsGrounded())
             Jump();
+        
     }
     private void MovePlayer()
     {
         var horizontalInput = Input.GetAxisRaw("Horizontal");
+        if (horizontalInput !=0) 
+            transform.localScale = new Vector3(horizontalInput > 0 ? 1 : -1,1,1);
         _playerRigidbody.velocity = new Vector2(horizontalInput * playerSpeed, _playerRigidbody.velocity.y);
     }
     private void Jump() => _playerRigidbody.velocity = new Vector2( 0, jumpPower);
